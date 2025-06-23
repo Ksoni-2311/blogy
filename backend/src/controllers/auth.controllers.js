@@ -1,7 +1,7 @@
 import bcrypt, { hash } from 'bcrypt'
 import User from '../models/auth.models.js'
-import mongoose from 'mongoose'
 import { generateToken } from '../lib/utils.js'
+import cloudinary from '../lib/cloudinary.js'
 
 
 export const login = async(req, res) => {
@@ -35,8 +35,8 @@ export const login = async(req, res) => {
 }
 
 export const signup =async(req, res) => {
-    console.log(req.body);
     const {fullName, email, password, profilePic } = req.body
+    // console.log(req.body);
     try {
         /* 1} take all field .chk !fullname || !email|| !! pass =>all are required
            2} for pass create salt then hash it store them at database 
@@ -69,11 +69,13 @@ export const signup =async(req, res) => {
         const salt =await bcrypt.genSalt(10);
         const hashPassword =await bcrypt.hash(password, salt);
 
+        const pic=await cloudinary.uploader.upload(profilePic)
+
         const newUser =new User({
             fullName,
             email,
             password:hashPassword,
-            profilePic
+            profilePic:pic.secure_url
         })
 
         if(!newUser){
@@ -119,7 +121,10 @@ export const updateProfile=async (req,res) => {
         }
         let updateFields={};
         if(fullName) updateFields.fullName=fullName;
-        if(profilePic) updateFields.profilePic=profilePic
+        if(profilePic){
+            const pic=await cloudinary.uploader.upload(profilePic)
+            updateFields.profilePic=pic.secure_url
+        }
         if(password){
             const salt =await bcrypt.genSalt(10);
             const hashPassword =await bcrypt.hash(password, salt);
