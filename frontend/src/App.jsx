@@ -7,22 +7,49 @@ import HomePage from './pages/HomePage.jsx'
 import Settings from './pages/Settings.jsx'
 import Profile from './pages/Profile.jsx'
 import Navbar from './pages/Navbar.jsx'
+import Landing from "./pages/Landing.jsx"
+import CreateBlog from "./pages/CreateBlog.jsx"
+import { Toaster } from "react-hot-toast"
+import { authUserStore } from "./store/authStore.js"
+import BlogDetail from "./pages/BlogDetails.jsx"
+import { useEffect } from "react"
+import LoadingSpinner from "./components/LoadingSpinner.jsx"
 
 function App() {
-  const authUser=true;
+  const {authUser,checkAuth,isCheckingAuth}=authUserStore()
+  console.log(authUser);  
+
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
+
+  if(isCheckingAuth){
+    <LoadingSpinner />
+  }
+
   return (
     <>
-    <Navbar />
     
     <div>
+    <Navbar />
     <Routes>
-      <Route path='/' element={authUser ? <HomePage /> :<Navigate to="/login"/> }   />
-      <Route path='/login' element={<LoginPage />}   />
-      <Route path='/signup' element={<SignUpPage />}   />
-      <Route path='/settings' element={<Settings />}   />
+      <Route path='/signup' element={!authUser?<SignUpPage />:<Navigate to="/" />}   />
+      <Route path='/login' element={!authUser?<LoginPage />:<Navigate to="/" /> }   />
+      <Route path='/' element={authUser ? <BlogDetail /> :<Navigate to="/login"/> }   />
+      <Route path='/create' element={authUser?<CreateBlog />:<Navigate to="/login"/>}/>
+      
+      
       <Route path='/profile' element={authUser?<Profile />:<Navigate to="/login" />}   />
+      <Route path='/dashboard' element={authUser ? <HomePage /> :<Navigate to="/login"/> }   />
+
+
+      {/* 
+      
+      <Route path='/settings' element={<Settings />}   />
+      
+      <Route path='/' element={!authUser && <Landing />}   /> */}
     </Routes>
-        
+    <Toaster />
     </div>
     </>
   )

@@ -48,7 +48,7 @@ export const currentUserBlog=async (req,res) => {
         2->and return it 
     */
    const userId=req.user._id;
-   console.log(userId);
+    //    console.log(userId);
    try {
     if (!userId) {
         return res.status(400).json("Unauthorised Access")

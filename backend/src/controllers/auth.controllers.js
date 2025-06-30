@@ -16,7 +16,7 @@ export const login = async(req, res) => {
             return
         }       
         const user =await User.findOne({email})
-        console.log(user);
+        console.log("user=>",user);
 
         if (!user) {
             res.status(401).json("Unauthorized Access")
@@ -147,3 +147,11 @@ export const getCurrentUser = async (req, res) => {
     res.status(500).json({ message: "Error fetching user", error: err.message });
   }
 };
+export const chechAuth=async (req,res) => {
+    try {
+        res.status(200).json(req.user)
+    } catch (error) {
+        console.log("error in checkAuth function",error.message)
+        res.status(500).json({message:"Internal server error"})
+    }
+}
