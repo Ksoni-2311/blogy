@@ -6,8 +6,10 @@ import { Calendar, User, Eye, ArrowLeft } from "lucide-react"
 // import { blogAPI } from "../services/api"
 import toast from "react-hot-toast"
 import LoadingSpinner from "../components/LoadingSpinner"
+import { blogsStore } from "../store/blogStore"
 
 const BlogDetail = () => {
+  const {blogs}=blogsStore()
   const [blog, setBlog] = useState(null)
   const [loading, setLoading] = useState(true)
   const { id } = useParams()
@@ -16,32 +18,32 @@ const BlogDetail = () => {
 //     fetchBlog()
 //   }, [id])
 
-  const fetchBlog = async () => {
-    try {
-      setLoading(true)
-      const response = await blogAPI.getBlogById(id)
-      setBlog(response.data.blog || response.data)
-    } catch (error) {
-      console.error("Error fetching blog:", error)
-      toast.error("Failed to load blog")
-    } finally {
-      setLoading(false)
-    }
-  }
+  // const fetchBlog = async () => {
+  //   try {
+  //     setLoading(true)
+  //     const response = await blogAPI.getBlogById(id)
+  //     setBlog(response.data.blog || response.data)
+  //   } catch (error) {
+  //     console.error("Error fetching blog:", error)
+  //     toast.error("Failed to load blog")
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  }
+  // const formatDate = (dateString) => {
+  //   return new Date(dateString).toLocaleDateString("en-US", {
+  //     year: "numeric",
+  //     month: "long",
+  //     day: "numeric",
+  //   })
+  // }
 
-  if (loading) {
-    return <LoadingSpinner />
-  }
+  // if (loading) {
+  //   return <LoadingSpinner />
+  // }
 
-  if (!blog) {
+  if (!blogs) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-600 text-lg mb-4">Blog not found.</p>
@@ -65,9 +67,9 @@ const BlogDetail = () => {
 
       {/* Blog Content */}
       <article className="bg-white rounded-lg shadow-md overflow-hidden">
-        {blog.image && (
+        {/* {blog.image && (
           <img src={blog.image || "/placeholder.svg"} alt={blog.title} className="w-full h-64 md:h-96 object-cover" />
-        )}
+        )} */}
 
         <div className="p-6 md:p-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{blog.title}</h1>
@@ -79,7 +81,7 @@ const BlogDetail = () => {
             </div>
             <div className="flex items-center space-x-2">
               <Calendar size={16} />
-              <span>{formatDate(blog.createdAt)}</span>
+              {/* <span>{formatDate(blog.createdAt)}</span> */}
             </div>
             {blog.views && (
               <div className="flex items-center space-x-2">

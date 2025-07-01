@@ -14,6 +14,8 @@ import { authUserStore } from "./store/authStore.js"
 import BlogDetail from "./pages/BlogDetails.jsx"
 import { useEffect } from "react"
 import LoadingSpinner from "./components/LoadingSpinner.jsx"
+import EditBlog from "./pages/EditBlog.jsx"
+import AllBlogDetails from "./pages/AllBlogDetails.jsx"
 
 function App() {
   const {authUser,checkAuth,isCheckingAuth}=authUserStore()
@@ -35,12 +37,13 @@ function App() {
     <Routes>
       <Route path='/signup' element={!authUser?<SignUpPage />:<Navigate to="/" />}   />
       <Route path='/login' element={!authUser?<LoginPage />:<Navigate to="/" /> }   />
-      <Route path='/' element={authUser ? <BlogDetail /> :<Navigate to="/login"/> }   />
+      <Route path='/' element={authUser ? <AllBlogDetails /> :<Navigate to="/login"/> }   />
       <Route path='/create' element={authUser?<CreateBlog />:<Navigate to="/login"/>}/>
       
       
       <Route path='/profile' element={authUser?<Profile />:<Navigate to="/login" />}   />
       <Route path='/dashboard' element={authUser ? <HomePage /> :<Navigate to="/login"/> }   />
+      <Route path="/edit-blog/:id" element={<EditBlog />} /> {/* ✅ EDIT ROUTE */}
 
 
       {/* 

@@ -5,6 +5,6 @@ const routes=express.Router()
 
 routes.post('/:id',protectRoute,postAblog)
 routes.get('/explore',protectRoute,getAllOtherblogs)
-routes.get('/my-blogs',protectRoute,currentUserBlog)
+routes.get('/myblogs',protectRoute,currentUserBlog)
 
 export default routes

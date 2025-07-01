@@ -6,7 +6,6 @@ export const blogsStore=create((set,get)=>({
     myBlogs:[],
     count:0,
     blogs:[],
-    blogger:null,
     isUserLoading:false,
     isblogsLoading:false,
 
@@ -26,7 +25,7 @@ export const blogsStore=create((set,get)=>({
     //     }
     // },
     sendAblog:async (msgData) => {
-        const {myBlogs,blogger}=get()
+        const {myBlogs}=get()
         try {
             const blogger=await axiosInstance.get("/user/check")
             const res=await axiosInstance.post(`/blog/${blogger._id}`,msgData)
@@ -34,7 +33,7 @@ export const blogsStore=create((set,get)=>({
             console.log(myBlogs);
             
         } catch (error) {
-            console.log(blogger._id," through error");
+            console.log(error);
             toast.error(error.response.data.message)
         }
     },
@@ -51,16 +50,17 @@ export const blogsStore=create((set,get)=>({
     },
     getUserAllBlogs:async () => {
         // const {myBlogs,count}=get()
-        set({isblogsLoading:true})
+        // set({isblogsLoading:true})
         try {
-            const res=await axiosInstance.get("/blog/my-blogs")
-            set({myBlogs:res.data.myBlogs})
+            const res=await axiosInstance.get("/blog/myblogs")
             console.log(res.data);
+            set({myBlogs:res.data.myBlogs})
+            set({count:res.data.count})
             console.log("hello");
         } catch (error) {
             toast.error(error.response.data.message)
         }finally{
-            set({isblogsLoading:false})
+            // set({isblogsLoading:false})
         }
     }
 }))

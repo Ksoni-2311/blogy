@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { blogsStore } from '../store/blogStore'
 import { Link } from 'react-router-dom'
 import { Calendar, Eye, PlusCircle, Trash2,Edit } from 'lucide-react'
@@ -7,11 +7,17 @@ import { authUserStore } from '../store/authStore'
 function HomePage() {
   const {myBlogs,getUserAllBlogs,count} = blogsStore()
   const {authUser}=authUserStore()
+ 
+  const hasFetchedRef = useRef(false);
 
-  // useRef(()=>{
-  //   getUserAllBlogs()
-  // },[])
-  // console.log(getUserAllBlogs());
+  useEffect(() => {
+  if (!hasFetchedRef.current) {
+    getUserAllBlogs();
+    hasFetchedRef.current = true;
+  }
+}, []);
+
+  // console.log(getUserAllBlogs())
   
   return (
     <div className="max-w-6xl mx-auto mt-20">
@@ -59,7 +65,7 @@ function HomePage() {
           <h2 className="text-xl font-semibold text-gray-800">Your Blogs</h2>
         </div>
 
-        {myBlogs.length === 0 ? (
+        {myBlogs.length ===0  ? (
           <div className="p-12 text-center">
             <p className="text-gray-600 text-lg mb-4">You haven't created any blogs yet.</p>
             <Link
