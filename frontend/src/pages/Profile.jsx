@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { User, Mail, Camera } from "lucide-react"
 import { authUserStore } from "../store/authStore"
+import { motion } from "framer-motion"
 
 const Profile = () => {
   const [formData, setFormData] = useState({
@@ -22,84 +23,103 @@ const Profile = () => {
   }, [authUser])
 
   return (
-    <div className="max-w-2xl mx-auto text-white mt-25">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Profile</h1>
-        <p className="text-gray-400">View your personal information.</p>
-      </div>
+    <motion.div
+      className="min-h-screen bg-gradient-to-r from-indigo-900 via-purple-900 to-black py-20 px-4 text-white flex justify-center"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+    >
+      <motion.div
+        className="w-full max-w-2xl bg-gray-900/80 rounded-2xl shadow-xl p-8 backdrop-blur"
+        initial={{ scale: 0.95 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        {/* Header */}
+        <motion.div
+          className="text-center mb-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <h1 className="text-4xl font-bold text-green-400">Your Profile</h1>
+          <p className="text-gray-300">View your personal information</p>
+        </motion.div>
 
-      <div className="bg-[#000000] rounded-lg shadow-md">
-        <div className="p-6 space-y-6">
-          {/* Profile Picture */}
-          <div className="flex flex-col items-center gap-4">
-            <div className="relative">
+        {/* Profile Picture */}
+        <motion.div
+          className="flex justify-center mb-8"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="relative">
+            <div className="p-[5px] rounded-full bg-gradient-to-tr from-purple-500 via-indigo-400 to-cyan-400">
               <img
                 src={authUser.profilePic}
                 alt="Profile"
-                className="size-32 rounded-full object-cover border-4 border-gray-700"
+                className="size-32 rounded-full object-cover border-4 border-gray-900"
               />
-              <label
-                htmlFor="avatar-upload"
-                className="absolute bottom-0 right-0 p-2 rounded-full transition-all duration-200 hidden"
-              >
-                <Camera className="w-5 h-5 text-base-200" />
-                <input
-                  type="file"
-                  id="avatar-upload"
-                  className="hidden"
-                  accept="image/*"
-                />
-              </label>
             </div>
-          </div>
-
-          {/* Full Name */}
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-400 mb-2">
-              Full Name
+            <label
+              htmlFor="avatar-upload"
+              className="absolute bottom-0 right-0 p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-80 cursor-pointer transition"
+            >
+              <Camera className="w-5 h-5 text-white" />
+              <input type="file" id="avatar-upload" className="hidden" />
             </label>
+          </div>
+        </motion.div>
+
+        {/* Info Fields */}
+        <div className="space-y-6">
+          {/* Full Name */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <label className="block text-sm text-gray-300 mb-1">Full Name</label>
             <input
               type="text"
-              id="name"
-              name="name"
               readOnly
-              className="w-full px-3 py-2 border border-gray-600 rounded-md bg-[#374151] cursor-not-allowed text-white"
               value={formData.name}
+              className="w-full bg-[#2c2c3a] text-white rounded-lg px-4 py-2 border border-indigo-500 cursor-not-allowed"
             />
-          </div>
+          </motion.div>
 
           {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-2">
-              Email Address
-            </label>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <label className="block text-sm text-gray-300 mb-1">Email Address</label>
             <input
               type="email"
-              id="email"
-              name="email"
               readOnly
-              className="w-full px-3 py-2 border border-gray-600 rounded-md bg-[#374151] cursor-not-allowed text-white"
               value={formData.email}
+              className="w-full bg-[#2c2c3a] text-white rounded-lg px-4 py-2 border border-indigo-500 cursor-not-allowed"
             />
-          </div>
+          </motion.div>
 
           {/* Bio */}
-          <div>
-            <label htmlFor="bio" className="block text-sm font-medium text-gray-400 mb-2">
-              Bio
-            </label>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.8 }}
+          >
+            <label className="block text-sm text-gray-300 mb-1">Bio</label>
             <textarea
-              id="bio"
-              name="bio"
               readOnly
-              rows={4}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md bg-[#374151] cursor-not-allowed text-white"
               value={formData.bio}
+              rows={4}
+              className="w-full bg-[#2c2c3a] text-white rounded-lg px-4 py-2 border border-indigo-500 cursor-not-allowed"
             />
-          </div>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 

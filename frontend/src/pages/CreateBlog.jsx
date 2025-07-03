@@ -1,10 +1,7 @@
-"use client"
-
-import { useState } from "react"
+import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Save, Eye } from "lucide-react"
-// import { blogAPI } from "../services/api"
-import { authUserStore } from "../store/authStore"
+import { motion } from "framer-motion"
 import toast from "react-hot-toast"
 import { blogsStore } from "../store/blogStore"
 
@@ -19,36 +16,27 @@ const CreateBlog = () => {
   const [preview, setPreview] = useState(false)
 
   const navigate = useNavigate()
-  // const {authUser,checkAuth } = authUserStore()
-  const {sendAblog,getUserAllBlogs} = blogsStore()
+  const { sendAblog } = blogsStore()
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    })
+    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value })
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
     if (!formData.title.trim() || !formData.content.trim()) {
       toast.error("Title and content are required")
       return
     }
 
     setLoading(true)
-
     try {
       sendAblog(formData)
-      console.log(formData);
-      
       toast.success("Blog created successfully!")
       navigate("/dashboard")
     } catch (error) {
-      console.error("Error creating blog:", error)
-      toast.error(error.response?.data?.message || "Failed to create blog")
+      toast.error("Failed to create blog")
     } finally {
       setLoading(false)
     }
@@ -59,15 +47,11 @@ const CreateBlog = () => {
       toast.error("Title and content are required")
       return
     }
-
     setLoading(true)
-
     try {
-    //   await (user._id, { ...formData, published: false })
       toast.success("Draft saved successfully!")
       navigate("/explore")
-    } catch (error) {
-      console.error("Error saving draft:", error)
+    } catch {
       toast.error("Failed to save draft")
     } finally {
       setLoading(false)
@@ -75,118 +59,120 @@ const CreateBlog = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Blog</h1>
-        <p className="text-gray-600">Share your thoughts with the world.</p>
-      </div>
+    <motion.div
+      className="max-w-4xl mx-auto px-4 pt-24 pb-16 min-h-screen"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
+      {/* Header */}
+      <motion.div
+        className="text-center mb-10"
+        initial={{ y: -30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.8 }}
+      >
+        <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight">
+          Create a <span className="text-yellow-400">New Blog</span>
+        </h1>
+        <p className="text-gray-300">Write something inspiring and powerful.</p>
+      </motion.div>
 
-      <div className="bg-black rounded-lg shadow-md">
+      {/* Form Container */}
+      <motion.div
+        className="bg-gradient-to-br from-indigo-900 via-purple-800 to-blue-900 rounded-2xl shadow-xl p-8"
+        initial={{ scale: 0.95 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         {!preview ? (
-          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 text-white">
             {/* Title */}
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-black-700 mb-2">
-                Title *
-              </label>
+              <label className="block text-sm font-medium mb-2">Title *</label>
               <input
                 type="text"
-                id="title"
                 name="title"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-2 rounded-md bg-gray-900 border border-purple-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 placeholder="Enter your blog title..."
                 value={formData.title}
                 onChange={handleChange}
               />
             </div>
 
-            {/* Image URL */}
+            {/* Image */}
             <div>
-              <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                Featured Image URL (optional)
-              </label>
+              <label className="block text-sm font-medium mb-2">Featured Image URL</label>
               <input
                 type="url"
-                id="image"
                 name="image"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-2 rounded-md bg-gray-900 border border-purple-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 placeholder="https://example.com/image.jpg"
                 value={formData.image}
                 onChange={handleChange}
               />
               {formData.image && (
-                <div className="mt-2">
-                  <img
-                    src={formData.image || "/placeholder.svg"}
-                    alt="Preview"
-                    className="w-full h-48 object-cover rounded-md"
-                    onError={(e) => {
-                      e.target.style.display = "none"
-                    }}
-                  />
-                </div>
+                <img
+                  src={formData.image}
+                  alt="Preview"
+                  className="w-full h-48 object-cover rounded-md mt-4 border-2 border-white"
+                  onError={(e) => (e.target.style.display = "none")}
+                />
               )}
             </div>
 
             {/* Content */}
             <div>
-              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-                Content *
-              </label>
+              <label className="block text-sm font-medium mb-2">Content *</label>
               <textarea
-                id="content"
                 name="content"
+                rows={10}
                 required
-                rows={15}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Write your blog content here..."
+                className="w-full px-4 py-2 rounded-md bg-gray-900 border border-purple-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                placeholder="Start writing..."
                 value={formData.content}
                 onChange={handleChange}
               />
             </div>
 
-            {/* Published Checkbox */}
-            <div className="flex items-center">
+            {/* Publish */}
+            <div className="flex items-center space-x-3">
               <input
                 type="checkbox"
-                id="published"
                 name="published"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 checked={formData.published}
                 onChange={handleChange}
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
               />
-              <label htmlFor="published" className="ml-2 block text-sm text-gray-700">
-                Publish immediately
-              </label>
+              <label className="text-sm text-gray-300">Publish immediately</label>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-6">
+            {/* Buttons */}
+            <div className="grid sm:grid-cols-3 gap-4 pt-6">
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-                // onClick={}
+                className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-md text-white font-medium flex items-center justify-center space-x-2 transition"
               >
                 <Save size={20} />
-                <span>{loading ? "Publishing..." : "Publish Blog"}</span>
+                <span>{loading ? "Publishing..." : "Publish"}</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleSaveDraft}
                 disabled={loading}
-                className="flex-1 bg-gray-600 text-white px-6 py-3 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="bg-gray-600 hover:bg-gray-700 px-5 py-3 rounded-md text-white font-medium flex items-center justify-center space-x-2 transition"
               >
                 <Save size={20} />
-                <span>{loading ? "Saving..." : "Save as Draft"}</span>
+                <span>{loading ? "Saving..." : "Save Draft"}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setPreview(true)}
-                className="flex-1 bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center space-x-2"
+                className="bg-green-600 hover:bg-green-700 px-5 py-3 rounded-md text-white font-medium flex items-center justify-center space-x-2 transition"
               >
                 <Eye size={20} />
                 <span>Preview</span>
@@ -194,33 +180,29 @@ const CreateBlog = () => {
             </div>
           </form>
         ) : (
-          <div className="p-6">
-            {/* Preview Mode */}
-            <div className="mb-6 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-white-800">Preview</h2>
+          <div className="text-white">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Blog Preview</h2>
               <button
                 onClick={() => setPreview(false)}
-                className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-800 rounded-md"
               >
                 Back to Edit
               </button>
             </div>
-
-            <article className="prose prose-lg max-w-none">
-              {formData.image && (
-                <img
-                  src={formData.image || "/placeholder.svg"}
-                  alt={formData.title}
-                  className="w-full h-64 object-cover rounded-lg mb-6"
-                />
-              )}
-              <h1 className="text-3xl font-bold text-white-900 mb-4">{formData.title || "Untitled"}</h1>
-              <div className="whitespace-pre-wrap text-white-700">{formData.content || "No content yet..."}</div>
-            </article>
+            {formData.image && (
+              <img
+                src={formData.image}
+                alt="Featured"
+                className="w-full h-64 object-cover rounded-lg mb-6"
+              />
+            )}
+            <h1 className="text-3xl font-extrabold mb-4">{formData.title}</h1>
+            <p className="whitespace-pre-wrap leading-relaxed text-gray-200">{formData.content}</p>
           </div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 

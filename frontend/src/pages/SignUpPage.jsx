@@ -1,10 +1,11 @@
 import { useState } from "react"
 import { GoogleLogin } from "@react-oauth/google"
 import { Eye, EyeOff, Lock, Mail, User, Camera } from 'lucide-react'
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import toast from "react-hot-toast"
 import avatar from '../assets/avatar.jpg'
 import { authUserStore } from "../store/authStore"
+import { motion } from "framer-motion"
 
 function SignUpPage() {
   const { signup } = authUserStore()
@@ -24,8 +25,7 @@ function SignUpPage() {
     setLoading(true)
 
     try {
-      // TODO: Send `formData` to backend here
-      signup(formData)
+      await signup(formData)
       toast.success("Account created successfully!")
     } catch (err) {
       toast.error("Signup failed. Please try again.")
@@ -43,7 +43,7 @@ function SignUpPage() {
 
     setIsUploadingImage(true)
 
-    reader.onload = async () => {
+    reader.onload = () => {
       const base64Image = reader.result
       setSelectedImage(base64Image)
       setFormData(prev => ({ ...prev, profilePic: base64Image }))
@@ -52,157 +52,151 @@ function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center font-extrabold text-4xl text-gray-900">
-            Create your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-black px-6 py-12 mt-5">
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="w-full max-w-md bg-black/60 backdrop-blur-lg rounded-2xl shadow-2xl p-8 text-white"
+      >
+        <motion.div
+          className="text-center mb-6"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <h2 className="text-4xl font-extrabold text-green-400 mb-2">Create your account</h2>
+          <p className="text-sm text-gray-300">
             Or{" "}
-            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link to="/login" className="text-blue-400 hover:underline">
               sign in to your existing account
             </Link>
           </p>
-        </div>
+        </motion.div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <div className="flex flex-col items-center gap-4">
-                <div className="relative">
-                  <img
-                    src={selectedImg || formData.profilePic || avatar}
-                    alt="Profile"
-                    className="size-32 rounded-full object-cover border-4"
-                  />
-                  <label
-                    htmlFor="avatar-upload"
-                    className={`
-                      absolute bottom-0 right-0 
-                      bg-base-content hover:scale-105
-                      p-2 rounded-full cursor-pointer 
-                      transition-all duration-200
-                      ${isUploadingImage ? "animate-pulse pointer-events-none" : ""}
-                    `}
-                  >
-                    <Camera className="w-5 h-5 text-base-200" />
-                    <input
-                      type="file"
-                      id="avatar-upload"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={isUploadingImage}
-                    />
-                  </label>
-                </div>
-                <p className="text-sm text-zinc-400">
-                  "Click the camera icon to update your photo"
-                </p>
-              </div>
-
-              <label htmlFor="fullName" className="sr-only">
-                Full Name
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  className="appearance-none relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="Full Name"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="appearance-none relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="Email address"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="new-password"
-                  required
-                  className="appearance-none relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                  <button
-                    type="button"
-                    className="text-gray-400 hover:text-gray-600"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? "Creating account..." : "Create account"}
-            </button>
-          </div>
-
-          <div className="mt-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Profile Picture */}
+          <motion.div
+            className="flex justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
             <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+              <div className="p-[3px] bg-gradient-to-tr from-purple-500 via-indigo-400 to-cyan-400 rounded-full">
+                <img
+                  src={selectedImg || formData.profilePic || avatar}
+                  alt="Profile"
+                  className="size-28 rounded-full object-cover border-4 border-gray-900"
+                />
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
-              </div>
+              <label
+                htmlFor="avatar-upload"
+                className="absolute bottom-0 right-0 p-2 bg-black bg-opacity-60 rounded-full cursor-pointer hover:bg-opacity-80 transition"
+              >
+                <Camera className="w-5 h-5 text-white" />
+                <input
+                  type="file"
+                  id="avatar-upload"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={isUploadingImage}
+                />
+              </label>
             </div>
+          </motion.div>
 
-            <div className="mt-6 flex justify-center">
-              {/* <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} useOneTap /> */}
+          {/* Full Name */}
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <div className="relative">
+              <User className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="text"
+                required
+                placeholder="Full Name"
+                className="w-full py-3 pl-10 pr-3 rounded-md bg-[#222] text-white placeholder-gray-400 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={formData.fullName}
+                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+              />
+            </div>
+          </motion.div>
+
+          {/* Email */}
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <div className="relative">
+              <Mail className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type="email"
+                required
+                placeholder="Email address"
+                className="w-full py-3 pl-10 pr-3 rounded-md bg-[#222] text-white placeholder-gray-400 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              />
+            </div>
+          </motion.div>
+
+          {/* Password */}
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <div className="relative">
+              <Lock className="absolute top-3 left-3 text-gray-400" />
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                placeholder="Password"
+                className="w-full py-3 pl-10 pr-10 rounded-md bg-[#222] text-white placeholder-gray-400 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              />
+              <button
+                type="button"
+                className="absolute top-3 right-3 text-gray-400"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Submit */}
+          <motion.button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:to-purple-700 text-white font-medium py-3 rounded-lg transition disabled:opacity-50"
+            whileTap={{ scale: 0.95 }}
+          >
+            {loading ? "Creating account..." : "Create account"}
+          </motion.button>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-600" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-black text-gray-400">or continue with</span>
             </div>
           </div>
+
+          {/* Google Login Placeholder */}
+          {/* <div className="flex justify-center">
+            <GoogleLogin onSuccess={() => toast.success("Google login success")} onError={() => toast.error("Google login failed")} />
+          </div> */}
         </form>
-      </div>
+      </motion.div>
     </div>
   )
 }

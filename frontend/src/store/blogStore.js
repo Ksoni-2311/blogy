@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 export const blogsStore=create((set,get)=>({
     myBlogs:[],
     count:0,
+    selectedBlog:null,
     blogs:[],
     isUserLoading:false,
     isblogsLoading:false,
@@ -61,6 +62,33 @@ export const blogsStore=create((set,get)=>({
             toast.error(error.response.data.message)
         }finally{
             // set({isblogsLoading:false})
+        }
+    },
+    editABlog:async (blogId,UpdatedBlog) => {
+        
+        set({isblogsLoading:false})
+        try {
+            const res=await axiosInstance.put(`/blog/editBlog/${blogId}`,UpdatedBlog);
+            set({selectedBlog:res.data})
+        } catch (error) {
+            console.log("error in edit a blog Frontend");
+            toast.error(error.response.data.message)
+        }
+        finally{
+            set({isblogsLoading:false})
+        }
+    },
+    viewABlog:async (id) => {
+        set({isblogsLoading:true})
+        try {
+            const res=await axiosInstance.get(`/blog/viewBlog/${id}`);
+            set({selectedBlog:res.data})
+        } catch (error) {
+            console.log("error in edit a blog Frontend");
+            toast.error(error.response.data.message)
+        }
+        finally{
+            set({isblogsLoading:false})
         }
     }
 }))

@@ -1,81 +1,88 @@
-import React, { useState } from 'react'
-import { Link } from "react-router-dom"
-import { Computer, Home, LogOut, Menu, Panda, PlusCircle, RectangleGoggles, Settings, User } from "lucide-react"
-import { authUserStore } from '../store/authStore.js'
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import {
+  Computer,
+  LogOut,
+  PlusCircle,
+  RectangleGoggles,
+  Settings,
+  User,
+  Panda,
+} from 'lucide-react'
+import { authUserStore } from '../store/authStore'
+
 function Navbar() {
   const { authUser, logout } = authUserStore()
-  console.log(authUser);
-  
+
   return (
-    <header
-      className="bg-base-100 border-b border-base-300 fixed w-full top-0 z-40 
-    backdrop-blur-lg "
+    <motion.header
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+      className="fixed w-full top-0 z-40 bg-gradient-to-r from-indigo-900 via-purple-800 to-blue-900 backdrop-blur-md shadow-md border-b border-purple-700"
     >
       <div className="container mx-auto px-4 h-16">
         <div className="flex items-center justify-between h-full">
-          {/*left-logo CHATAR__PATTAR*/}
-          <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-all">
-              <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Panda size={36} color="#0681e0" strokeWidth={1.5} className=" text-primary animate-pulse " />
-              </div>
-              <h1 className=" text-2xl font-bold hidden sm:block ">Blogy</h1>
-            </Link>
-          </div>
-
-
-          
-          
-          <div className="flex items-center gap-2">
-            {authUser &&
-          <>
-            <Link to="/" className="btn btn-sm gap-2 transition-colorstext-white-700 hover:text-blue-600 transition-colors">
-          <RectangleGoggles />
-                <span className="hidden sm:inline">Explore</span>
-              </Link>
-
-          <Link to="/dashboard" className="btn btn-sm gap-2 transition-colorstext-white-700 hover:text-blue-600 transition-colors">
-          <Computer />
-                <span className="hidden sm:inline">DashBoard</span>
-              </Link>
-
-              <Link
-                to="/create"
-                className="btn btn-sm flex items-center space-x-1 text-white-700 hover:text-blue-600 transition-colors"
-              >
-                <PlusCircle size={18} />
-                <span className="hidden sm:inline">Create</span>
-              </Link>
-              <Link to={"/profile"} className={`btn btn-sm gap-2  hover:text-blue-600 `}>
-                <User className="size-5" />
-                <span className="hidden sm:inline">Profile</span>
-              </Link>
-              </>
-          }
-            <Link
-              to={"/settings"}
-              className={`
-              btn btn-sm gap-2 transition-colors  hover:text-blue-600 
-              `}
+          {/* Logo & Brand */}
+          <Link
+            to="/"
+            className="flex items-center gap-3 hover:opacity-90 transition"
+          >
+            <motion.div
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center"
             >
-              <Settings className="w-4 h-4" />
-              <span className="hidden sm:inline">Settings</span>
-            </Link>
+              <Panda size={28} strokeWidth={1.5} className="text-primary" color="#60a5fa" />
+            </motion.div>
+            <h1 className="text-2xl font-extrabold text-white hidden sm:block tracking-wide">
+              Blogy
+            </h1>
+          </Link>
 
-            {authUser ? (
+          {/* Nav Links */}
+          <div className="flex items-center gap-4 text-white">
+            {authUser && (
               <>
-
-                <button className="flex gap-2 items-center  hover:text-blue-600 " onClick={logout}>
-                  <LogOut className="size-5" />
-                  <span className="hidden sm:inline">Logout</span>
-                </button>
+                <NavButton icon={<RectangleGoggles />} to="/" label="Explore" />
+                <NavButton icon={<Computer />} to="/dashboard" label="Dashboard" />
+                <NavButton icon={<PlusCircle size={18} />} to="/create" label="Create" />
+                <NavButton icon={<User />} to="/profile" label="Profile" />
               </>
-            ):<>
-                  </>}
+            )}
+
+            {/* <NavButton icon={<Settings size={18} />} to="/settings" label="Settings" /> */}
+
+            {authUser && (
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 hover:text-red-400 transition"
+                onClick={logout}
+              >
+                <LogOut size={18} />
+                <span className="hidden sm:inline">Logout</span>
+              </motion.button>
+            )}
           </div>
         </div>
       </div>
-    </header>
+    </motion.header>
+  )
+}
+
+function NavButton({ icon, to, label }) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      transition={{ duration: 0.2 }}
+      className="text-white hover:text-yellow-300 transition"
+    >
+      <Link to={to} className="flex items-center gap-2 text-sm">
+        {icon}
+        <span className="hidden sm:inline">{label}</span>
+      </Link>
+    </motion.div>
   )
 }
 

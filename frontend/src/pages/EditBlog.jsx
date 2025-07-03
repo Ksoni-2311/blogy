@@ -3,249 +3,199 @@
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Save, Eye } from "lucide-react"
-// import { blogAPI } from "../services/api"
 import toast from "react-hot-toast"
 import LoadingSpinner from "../components/LoadingSpinner.jsx"
+import { blogsStore } from "../store/blogStore.js"
+import { motion } from "framer-motion"
 
 const EditBlog = () => {
+  const { viewABlog, selectedBlog, isblogsLoading, editABlog } = blogsStore()
   const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-    image: "",
-    published: false,
+    newTitle: selectedBlog?.title || "",
+    newContent: ""
   })
-  const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [preview, setPreview] = useState(false)
 
   const { id } = useParams()
   const navigate = useNavigate()
 
-//   useEffect(() => {
-//     fetchBlog()
-//   }, [id])
+  useEffect(() => {
+    viewABlog(id)
+  }, [id])
 
-//   const fetchBlog = async () => {
-//     try {
-//       setLoading(true)
-//       const response = await blogAPI.getBlogById(id)
-//       const blog = response.data.blog || response.data
-//       setFormData({
-//         title: blog.title || "",
-//         content: blog.content || "",
-//         image: blog.image || "",
-//         published: blog.published || false,
-//       })
-//     } catch (error) {
-//       console.error("Error fetching blog:", error)
-//       toast.error("Failed to load blog")
-//       navigate("/dashboard")
-//     } finally {
-//       setLoading(false)
-//     }
-//   }
+  useEffect(() => {
+    if (selectedBlog) {
+      setFormData({
+        newTitle: selectedBlog.title,
+        newContent: selectedBlog.content,
+      })
+    }
+  }, [selectedBlog])
 
-//   const handleChange = (e) => {
-//     const { name, value, type, checked } = e.target
-//     setFormData({
-//       ...formData,
-//       [name]: type === "checkbox" ? checked : value,
-//     })
-//   }
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault()
-
-//     if (!formData.title.trim() || !formData.content.trim()) {
-//       toast.error("Title and content are required")
-//       return
-//     }
-
-//     setSaving(true)
-
-//     try {
-//       await blogAPI.updateBlog(id, formData)
-//       toast.success("Blog updated successfully!")
-//       navigate("/dashboard")
-//     } catch (error) {
-//       console.error("Error updating blog:", error)
-//       toast.error(error.response?.data?.message || "Failed to update blog")
-//     } finally {
-//       setSaving(false)
-//     }
-//   }
-
-//   const handleSaveDraft = async () => {
-//     if (!formData.title.trim() || !formData.content.trim()) {
-//       toast.error("Title and content are required")
-//       return
-//     }
-
-//     setSaving(true)
-
-//     try {
-//       await blogAPI.updateBlog(id, { ...formData, published: false })
-//       toast.success("Draft saved successfully!")
-//       navigate("/dashboard")
-//     } catch (error) {
-//       console.error("Error saving draft:", error)
-//       toast.error("Failed to save draft")
-//     } finally {
-//       setSaving(false)
-//     }
-//   }
-
-  if (!loading) {
-    return <LoadingSpinner />
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      setSaving(true)
+      await editABlog(id, formData)
+      toast.success("Blog Updated Successfully!")
+      navigate("/dashboard")
+    } catch (error) {
+      console.error(error)
+      toast.error("Something went wrong, please try again later.")
+    } finally {
+      setSaving(false)
+    }
   }
 
+  if (isblogsLoading) return <LoadingSpinner />
+
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Edit Blog</h1>
-        <p className="text-gray-600">Update your blog content.</p>
-      </div>
+    <div className="min-h-screen bg-gray-900 px-6 py-10 text-gray-100 mt-8">
+      <motion.div
+        className="max-w-4xl mx-auto"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <header className="mb-8 text-center">
+          <h1 className="text-4xl font-extrabold text-blue-500 drop-shadow-lg">
+            Edit Blog
+          </h1>
+          <p className="mt-2 text-gray-400">
+            Update your blog content below.
+          </p>
+        </header>
 
-      <div className="bg-white rounded-lg shadow-md">
-        {!preview ? (
-          <form 
-        //   onSubmit={handleSubmit} 
-          className="p-6 space-y-6">
-            {/* Title */}
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                Title *
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter your blog title..."
-                value={formData.title}
-                // onChange={handleChange}
-              />
-            </div>
-
-            {/* Image URL */}
-            <div>
-              <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                Featured Image URL (optional)
-              </label>
-              <input
-                type="url"
-                id="image"
-                name="image"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://example.com/image.jpg"
-                value={formData.image}
-                // onChange={handleChange}
-              />
-              {formData.image && (
-                <div className="mt-2">
-                  <img
-                    src={formData.image || "/placeholder.svg"}
-                    alt="Preview"
-                    className="w-full h-48 object-cover rounded-md"
-                    onError={(e) => {
-                      e.target.style.display = "none"
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Content */}
-            <div>
-              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-                Content *
-              </label>
-              <textarea
-                id="content"
-                name="content"
-                required
-                rows={15}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Write your blog content here..."
-                value={formData.content}
-                // onChange={handleChange}
-              />
-            </div>
-
-            {/* Published Checkbox */}
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="published"
-                name="published"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                checked={formData.published}
-                // onChange={handleChange}
-              />
-              <label htmlFor="published" className="ml-2 block text-sm text-gray-700">
-                Published
-              </label>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-6">
-              <button
-                type="submit"
-                disabled={saving}
-                className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+        <motion.div
+                className="bg-gradient-to-br from-indigo-900 via-purple-800 to-blue-900 rounded-2xl shadow-xl p-8"
+                initial={{ scale: 0.95 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.5 }}
               >
-                <Save size={20} />
-                <span>{saving ? "Updating..." : "Update Blog"}</span>
-              </button>
-
-              <button
-                type="button"
-                // onClick={handleSaveDraft}
-                disabled={saving}
-                className="flex-1 bg-gray-600 text-white px-6 py-3 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-              >
-                <Save size={20} />
-                <span>{saving ? "Saving..." : "Save as Draft"}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setPreview(true)}
-                className="flex-1 bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center space-x-2"
-              >
-                <Eye size={20} />
-                <span>Preview</span>
-              </button>
-            </div>
-          </form>
-        ) : (
-          <div className="p-6">
-            {/* Preview Mode */}
-            <div className="mb-6 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-800">Preview</h2>
-              <button
-                onClick={() => setPreview(false)}
-                className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
-              >
-                Back to Edit
-              </button>
-            </div>
-
-            <article className="prose prose-lg max-w-none">
-              {formData.image && (
-                <img
-                  src={formData.image || "/placeholder.svg"}
-                  alt={formData.title}
-                  className="w-full h-64 object-cover rounded-lg mb-6"
+          {!preview ? (
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Title */}
+              <div>
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-semibold text-blue-400 mb-2"
+                >
+                  Title <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  required
+                  placeholder="Enter your blog title..."
+                  value={formData.newTitle}
+                  onChange={(e) =>
+                    setFormData({ ...formData, newTitle: e.target.value })
+                  }
+                  className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-blue-600 text-gray-100 placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                 />
-              )}
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">{formData.title || "Untitled"}</h1>
-              <div className="whitespace-pre-wrap text-gray-700">{formData.content || "No content yet..."}</div>
-            </article>
-          </div>
-        )}
-      </div>
+              </div>
+
+              {/* Content */}
+              <div>
+                <label
+                  htmlFor="content"
+                  className="block text-sm font-semibold text-blue-400 mb-2"
+                >
+                  Content <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="content"
+                  name="content"
+                  required
+                  rows={15}
+                  placeholder="Write your blog content here..."
+                  value={formData.newContent}
+                  onChange={(e) =>
+                    setFormData({ ...formData, newContent: e.target.value })
+                  }
+                  className="w-full px-4 py-4 rounded-lg bg-gray-700 border border-blue-600 text-gray-100 placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-y"
+                />
+              </div>
+
+              {/* Published Checkbox */}
+              <div className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  id="published"
+                  name="published"
+                  className="h-5 w-5 rounded border-blue-500 text-blue-600 focus:ring-blue-500"
+                  // Add your checked logic here
+                />
+                <label
+                  htmlFor="published"
+                  className="text-blue-400 font-medium"
+                >
+                  Published
+                </label>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row gap-5 pt-6">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 flex items-center justify-center space-x-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg shadow-md transition"
+                >
+                  <Save size={20} />
+                  <span>{saving ? "Updating..." : "Update Blog"}</span>
+                </motion.button>
+
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  type="button"
+                  disabled={saving}
+                  className="flex-1 flex items-center justify-center space-x-3 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-blue-300 font-semibold py-3 rounded-lg shadow-md transition"
+                >
+                  <Save size={20} />
+                  <span>{saving ? "Saving..." : "Save as Draft"}</span>
+                </motion.button>
+
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  type="button"
+                  onClick={() => setPreview(true)}
+                  className="flex-1 flex items-center justify-center space-x-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-lg shadow-md transition"
+                >
+                  <Eye size={20} />
+                  <span>Preview</span>
+                </motion.button>
+              </div>
+            </form>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0.3 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4 }}
+              className="p-6 rounded-lg bg-gray-800 shadow-lg"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-blue-400">Preview</h2>
+                <button
+                  onClick={() => setPreview(false)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                >
+                  Back to Edit
+                </button>
+              </div>
+
+              <article className="prose prose-lg max-w-none text-gray-100">
+                {formData.newTitle && (
+                  <h1 className="mb-4">{formData.newTitle}</h1>
+                )}
+                <p className="whitespace-pre-wrap">{formData.newContent || "No content yet..."}</p>
+              </article>
+            </motion.div>
+          )}
+        </motion.div>
+      </motion.div>
     </div>
   )
 }

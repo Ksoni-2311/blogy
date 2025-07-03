@@ -64,3 +64,45 @@ export const currentUserBlog=async (req,res) => {
    }
 
 }
+export const editABlog=async (req,res) => {
+    const {newTitle,newContent}=req.body
+    const {blogId}=req.params
+    try {        
+        // take req.body and make changes as per data given 
+         const updatedFields = {
+            title: newTitle,
+            content: newContent,
+            }
+
+            const blog=await Blog.findByIdAndUpdate(blogId,updatedFields,{new:true})
+            if (!blog) {
+                res.status(404).json({error:"No blog found"})
+            } 
+                res.status(200).json({
+                message: "Blog updated successfully",
+                blog,
+                })
+    } catch (error) {
+        console.error("Error in editing blog:", error)
+        res.status(500).json({ error: "Server error while updating blog" })
+    }
+}
+export const viewABlog = async (req, res) => {
+  const { id } = req.params 
+  console.log(req.params);
+
+  try {
+    const blog = await Blog.findById(id)
+    // console.log("Blog ID:", id)
+    // console.log("Found Blog:", blog)
+
+    if (!blog) {
+      return res.status(404).json({ message: "No blog found" })  
+    }
+
+    res.status(200).json(blog)  
+  } catch (error) {
+    console.log("Error in viewing a blog:", error)
+    res.status(500).json({ message: "Server error", error })
+  }
+}

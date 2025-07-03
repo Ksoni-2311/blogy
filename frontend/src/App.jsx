@@ -16,6 +16,8 @@ import { useEffect } from "react"
 import LoadingSpinner from "./components/LoadingSpinner.jsx"
 import EditBlog from "./pages/EditBlog.jsx"
 import AllBlogDetails from "./pages/AllBlogDetails.jsx"
+import ViewBlog from "./pages/ViewBlog.jsx"
+import CommonPage from "./pages/CommonPage.jsx"
 
 function App() {
   const {authUser,checkAuth,isCheckingAuth}=authUserStore()
@@ -43,7 +45,9 @@ function App() {
       
       <Route path='/profile' element={authUser?<Profile />:<Navigate to="/login" />}   />
       <Route path='/dashboard' element={authUser ? <HomePage /> :<Navigate to="/login"/> }   />
-      <Route path="/edit-blog/:id" element={<EditBlog />} /> {/* ✅ EDIT ROUTE */}
+      <Route path="/editBlog/:id" element={<EditBlog />} /> {/* ✅ EDIT ROUTE */}
+      <Route path="/viewBlog/:id" element={<ViewBlog />} /> {/* ✅ View ROUTE */}
+      <Route path="*" element={<CommonPage />} /> {/* ✅ View ROUTE */}
 
 
       {/* 

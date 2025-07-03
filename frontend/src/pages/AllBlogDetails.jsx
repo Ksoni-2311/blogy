@@ -1,39 +1,90 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { blogsStore } from '../store/blogStore'
 
 function AllBlogDetails() {
-    const {blogs}=blogsStore()
-    console.log(blogs);
-    
+  const { blogs, getAllBlogs } = blogsStore()
+  const hasFetchedRef = useRef(false)
+
+  useEffect(() => {
+    if (!hasFetchedRef.current) {
+      getAllBlogs()
+      hasFetchedRef.current = true
+    }
+  }, [])
+
+  const getPreview = (content) => {
+    const words = content.split(' ')
+    return {
+      preview: words.slice(0, 50).join(' ') + (words.length > 50 ? '...' : ''),
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 mt-15">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Blog</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover insights, tutorials, and the latest trends in web development
-          </p>
-        </div>
+    <div className="min-h-screen bg-violet-950 text-white py-8 px-4 sm:px-6 lg:px-8 flex justify-center">
+      <div className="max-w-[1300px] w-full">
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="relative w-full bg-gradient-to-r from-indigo-900 via-purple-800 to-indigo-900 rounded-xl p-10 mb-12"
+        >
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.h1
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="text-5xl font-extrabold text-white mb-4 leading-tight tracking-tight"
+            >
+              Explore Blogs that <span className="text-yellow-400">Inspire</span> and <span className="text-green-400">Empower</span>
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.6 }}
+              className="text-lg text-gray-200 max-w-xl mx-auto"
+            >
+              Discover insightful articles, guides, and stories from developers and creators across the world.
+            </motion.p>
+          </div>
+        </motion.div>
 
         {/* Blog Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogs.map((blog) => (
-            <div
-              key={blog.id}
-              className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden"
-            >
-              <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2">{blog.title}</h2>
-                <p className="text-gray-600 text-sm leading-relaxed line-clamp-4">{blog.content}</p>
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <button className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200">
-                    Read More →
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className=" rounded-lg p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+            {blogs.map((blog, index) => {
+              
+              const { preview } = getPreview(blog.content)
+
+              return (
+                <motion.div
+                  key={blog._id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  className="bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition duration-300 p-6 flex flex-col justify-between aspect-auto "
+                >
+                  <div className="mb-4">
+                    <h2 className="text-xl font-bold text-green-400 mb-5 line-clamp-2">{blog.title}</h2>
+                           {blog.title.length < 27 && (
+                        <p className="pt-3 text-transparent"></p>
+                      )}
+                    <p className="text-sm text-white line-clamp-8 mt-5">{preview}</p>
+                  </div>
+                  <div className="mt-auto pt-4 border-t border-gray-700">
+                    <Link
+                      to={`/viewBlog/${blog._id}`}
+                      className="inline-block text-blue-400 hover:text-blue-300 font-medium text-sm transition-colors duration-200"
+                    >
+                      Read More →
+                    </Link>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
         </div>
 
         {/* Load More Button */}
