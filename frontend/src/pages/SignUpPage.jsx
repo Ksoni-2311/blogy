@@ -1,13 +1,15 @@
 import { useState } from "react"
-import { GoogleLogin } from "@react-oauth/google"
 import { Eye, EyeOff, Lock, Mail, User, Camera } from 'lucide-react'
-import { Link } from "react-router-dom"
+import { Link, Navigate, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import avatar from '../assets/avatar.jpg'
 import { authUserStore } from "../store/authStore"
 import { motion } from "framer-motion"
+import {auth,googleProvider} from '../lib/firebase.config.js'
+import {  signInWithPopup } from 'firebase/auth'
 
 function SignUpPage() {
+   const navigate = useNavigate()
   const { signup } = authUserStore()
   const [showPassword, setShowPassword] = useState(true)
   const [selectedImg, setSelectedImage] = useState(false)
@@ -19,6 +21,30 @@ function SignUpPage() {
     password: "",
     profilePic: ""
   })
+  const loginWithGoogle=async () => {
+    try {
+      const result=await signInWithPopup(auth,googleProvider)
+      const user=result.user
+      const name = user.displayName
+      const email = user.email
+      const photo = user.photoURL
+      const id=await user.getIdToken()
+
+      const newFormData={
+        fullName:name,
+        profilePic:photo,
+        email:email,
+        password:email+`${id}`
+      }
+      
+      await signup(newFormData);
+      toast.success("Account Created SuccessFully Please Login To Continue")
+      navigate('/login')
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -182,19 +208,23 @@ function SignUpPage() {
           </motion.button>
 
           {/* Divider */}
-          <div className="relative my-6">
+          {/* <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-600" />
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-2 bg-black text-gray-400">or continue with</span>
             </div>
-          </div>
+          </div> */}
 
           {/* Google Login Placeholder */}
-          {/* <div className="flex justify-center">
-            <GoogleLogin onSuccess={() => toast.success("Google login success")} onError={() => toast.error("Google login failed")} />
-          </div> */}
+          {/* <button
+            onClick={loginWithGoogle}
+            className="w-full flex justify-center items-center gap-2 bg-blue-950 text-black font-medium py-3 rounded-lg hover:bg-gray-200 transition"
+          >
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" className="w-5 h-5" />
+            Sign up with Google
+          </button> */}
         </form>
       </motion.div>
     </div>

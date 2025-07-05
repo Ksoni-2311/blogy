@@ -4,6 +4,10 @@ import { Eye, EyeOff, Mail, Lock } from "lucide-react"
 import { authUserStore } from '../store/authStore'
 import toast from 'react-hot-toast'
 import { motion } from 'framer-motion'
+import { auth, googleProvider } from '../lib/firebase.config'
+import { signInWithPopup } from 'firebase/auth'
+import { useNavigate } from 'react-router-dom'
+
 
 function LoginPage() {
   const { isLogginIn, login, authUser } = authUserStore()
@@ -12,6 +16,29 @@ function LoginPage() {
     email: "",
     password: ""
   })
+  const navigate = useNavigate()
+
+  const loginWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      const user = result.user
+      const id=await user.getIdToken()
+      
+      const userData = {
+        email: user.email,
+        password: user.email +`${id}`
+      }
+
+      await login(userData) // login function from Zustand
+      console.log(userData);
+      navigate("/dashboard")
+      toast.success("Logged in with Google!")
+    } catch (error) {
+      console.error("Google Login Error:", error)
+      toast.error("Google login failed.")
+    }
+  }
+
 
   const validateForm = () => {
     if (!formData.email && !formData.password) {
@@ -118,7 +145,7 @@ function LoginPage() {
           </motion.button>
 
           {/* Divider */}
-          <motion.div
+          {/* <motion.div
             className="relative mt-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -130,13 +157,23 @@ function LoginPage() {
             <div className="relative flex justify-center text-sm">
               <span className="px-2 bg-black text-gray-400">or continue with</span>
             </div>
-          </motion.div>
+          </motion.div> */}
 
-          <div className="mt-6 flex justify-center">
-            {/* Placeholder for Google Login */}
-            {/* <GoogleLogin onSuccess={} onError={} /> */}
-          </div>
+         <div className="mt-6 flex justify-center">
+      </div>
         </form>
+        {/* <button
+    onClick={loginWithGoogle}
+    className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:to-purple-700 text-white font-medium py-3 rounded-lg transition disabled:opacity-50"
+  >
+    <img
+      src="https://developers.google.com/identity/images/g-logo.png"
+      alt="Google"
+      className="w-5 h-5"
+    />
+    <span className="font-medium">Sign in with Google</span>
+  </button> */}
+
       </motion.div>
     </div>
   )

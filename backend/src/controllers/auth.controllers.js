@@ -3,7 +3,6 @@ import User from '../models/auth.models.js'
 import { generateToken } from '../lib/utils.js'
 import cloudinary from '../lib/cloudinary.js'
 
-
 export const login = async(req, res) => {
     const {email , password}=req.body
     try {
@@ -65,6 +64,7 @@ export const signup =async(req, res) => {
             res.status(500).json("User already exist. Please login")
             return
         }
+        // log("yaha ")
 
         const salt =await bcrypt.genSalt(10);
         const hashPassword =await bcrypt.hash(password, salt);

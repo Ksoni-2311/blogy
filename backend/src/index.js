@@ -5,11 +5,10 @@ import {connectDB} from './lib/db.js'
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser';
 import cors from 'cors'
+import {io,app,server} from './lib/socket.js'
 dotenv.config()
 
 const PORT=process.env.PORT || 7778;
-
-const app=express()
 
 // app.use(express.json());
 app.use(express.json({ limit: "10mb" }));
@@ -30,7 +29,7 @@ app.use(cors({
 app.use('/user',authRoutes)
 app.use("/blog",blogRoutes)
 
-app.listen(PORT,()=>{
+server.listen(PORT,()=>{
     console.log(`app is listening at port ${PORT}`);
     connectDB()
 })

@@ -1,18 +1,38 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { blogsStore } from '../store/blogStore'
+import LoadingSpinner from '../components/LoadingSpinner'
+import MDEditor from '@uiw/react-md-editor'
 
 function AllBlogDetails() {
-  const { blogs, getAllBlogs } = blogsStore()
+  const { blogs, getAllBlogs,isblogsLoading,currentPage,totalPages,count} = blogsStore()
+  // const [check,setCheck]=useState(()=>{
+
+  // });
+  
   const hasFetchedRef = useRef(false)
+
+  const handleLoadMore=() => {
+    if(currentPage<totalPages){
+      getAllBlogs(currentPage+1);
+      //   if(isblogsLoading){
+      //   return <LoadingSpinner />
+      // }
+    }
+    
+  }
 
   useEffect(() => {
     if (!hasFetchedRef.current) {
-      getAllBlogs()
+      getAllBlogs(1)
       hasFetchedRef.current = true
     }
   }, [])
+
+  if(isblogsLoading){
+    <LoadingSpinner />
+  }
 
   const getPreview = (content) => {
     const words = content.split(' ')
@@ -64,14 +84,18 @@ function AllBlogDetails() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition duration-300 p-6 flex flex-col justify-between aspect-auto "
+                  className="bg-black rounded-lg shadow-md hover:shadow-xl transition duration-300 p-6 flex flex-col justify-between aspect-auto "
                 >
                   <div className="mb-4">
                     <h2 className="text-xl font-bold text-green-400 mb-5 line-clamp-2">{blog.title}</h2>
                            {blog.title.length < 27 && (
                         <p className="pt-3 text-transparent"></p>
                       )}
-                    <p className="text-sm text-white line-clamp-8 mt-5">{preview}</p>
+                      <MDEditor.Markdown
+                        source={preview}
+                        className="text-sm text-white prose prose-invert max-w-none mt-5"
+                      />
+                    {/* <p className="text-sm text-white line-clamp-8 mt-5">{preview}</p> */}
                   </div>
                   <div className="mt-auto pt-4 border-t border-gray-700">
                     <Link
@@ -88,8 +112,10 @@ function AllBlogDetails() {
         </div>
 
         {/* Load More Button */}
+        {/* currentPage*16>count */}
+        
         <div className="text-center mt-12">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200" onClick={handleLoadMore}>
             Load More Posts
           </button>
         </div>

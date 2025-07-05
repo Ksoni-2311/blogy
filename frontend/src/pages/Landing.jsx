@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Calendar, Eye, User } from 'lucide-react'
 
 const Landing = () => {
-    const {getAllBlogs}=blogsStore()
+    const {getAllBlogs,isblogsLoading}=blogsStore()
     const [blogs, setBlogs] = useState([])
     const [loading, setLoading] = useState(true)
 
@@ -23,9 +23,9 @@ const Landing = () => {
     })
   }
 
-//   if (loading) {
-//     return <LoadingSpinner />
-//   }
+  if (!isblogsLoading) {
+    return <LoadingSpinner />
+  }
 
   return (
     <div className="min-h-screen">

@@ -17,7 +17,7 @@ const Profile = () => {
       setFormData({
         name: authUser.fullName || "",
         email: authUser.email || "",
-        bio: authUser.bio || "",
+        bloggerSince: authUser.createdAt || "",
       })
     }
   }, [authUser])
@@ -102,9 +102,23 @@ const Profile = () => {
               className="w-full bg-[#2c2c3a] text-white rounded-lg px-4 py-2 border border-indigo-500 cursor-not-allowed"
             />
           </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <span className="block text-sm text-gray-300 mb-1">Member Since</span>
+            <input
+              type="email"
+              readOnly
+              value={formData.bloggerSince?.split("T")[0]}
+
+              className="w-full bg-[#2c2c3a] text-white rounded-lg px-4 py-2 border border-indigo-500 cursor-not-allowed"
+            />
+          </motion.div>
 
           {/* Bio */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.8 }}
@@ -112,11 +126,11 @@ const Profile = () => {
             <label className="block text-sm text-gray-300 mb-1">Bio</label>
             <textarea
               readOnly
-              value={formData.bio}
+              value={formData.bloggerSince?.split("T")[0]}
               rows={4}
               className="w-full bg-[#2c2c3a] text-white rounded-lg px-4 py-2 border border-indigo-500 cursor-not-allowed"
             />
-          </motion.div>
+          </motion.div> */}
         </div>
       </motion.div>
     </motion.div>

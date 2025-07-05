@@ -1,16 +1,51 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { blogsStore } from '../store/blogStore'
 import LoadingSpinner from '../components/LoadingSpinner'
+import MDEditor from "@uiw/react-md-editor";
+import { ThumbsDown, ThumbsUp } from 'lucide-react'
+import {socket} from '../lib/socket.js'
+
+
 
 function ViewBlog() {
   const { id } = useParams()
-  const { viewABlog, selectedBlog, isblogsLoading } = blogsStore()
+  const { viewABlog, selectedBlog, isblogsLoading,likeButton,TotalLike,isLiked,syncLike} = blogsStore()
+  // const [like,setLike]=useState(false)
+  const [dislike,setDislike]=useState(false)
+   useEffect(()=>{
+    
+  },[likeButton])
+
+  useEffect(() => {
+    socket.on("likeUpdate", (blogId) => {
+      syncLike(blogId); // defined in Zustand store
+    });
+
+    return () => {
+      socket.off("likeUpdate");
+    };
+  }, []);
 
   useEffect(() => {
     viewABlog(id)
-  }, [id, viewABlog])
+  }, [id, viewABlog,likeButton])
+
+  // console.log(id);
+  const handledislikeLikeButton=()=>{
+    setDislike(!dislike)
+    if(isLiked===true){
+      likeButton(id)
+    }
+  }
+
+  const handleLikeButton=()=>{
+    likeButton(id)
+    setDislike(false)
+    // selectedBlog.TotalLike+1
+  }
+
 
   if (isblogsLoading || !selectedBlog) {
     return <LoadingSpinner />
@@ -42,9 +77,40 @@ function ViewBlog() {
           className="prose lg:prose-xl max-w-none text-gray-200 prose-invert"
         >
           <p className="whitespace-pre-wrap leading-relaxed text-lg">
-            {selectedBlog.content}
+            <MDEditor.Markdown source={selectedBlog.content} />
           </p>
         </motion.div>
+
+        {/* like dislike div */}
+        <motion.div className="flex gap-4">
+        <motion.div>
+            <motion.button
+                onClick={handleLikeButton
+                //   setLike(!like)
+                //   if (!like) setDislike(false) // Uncheck dislike when like is activated
+                // }
+              }
+              >
+                {isLiked ? (
+                  <ThumbsUp size={30} color="#00ccff" strokeWidth={1.5} />
+                ) : (
+                  <ThumbsUp size={30} strokeWidth={1.5} />
+                )}
+              </motion.button>
+              <span>{selectedBlog.likes.length}</span>
+        </motion.div>
+
+      <motion.button
+        onClick={handledislikeLikeButton}
+      >
+        {dislike ? (
+          <ThumbsDown size={30} color="#ff0000" strokeWidth={1.5} />
+        ) : (
+          <ThumbsDown size={30} strokeWidth={1.5} />
+        )}
+      </motion.button>
+    </motion.div>
+
 
         {/* Back Button */}
         <motion.div

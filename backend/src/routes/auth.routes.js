@@ -8,5 +8,6 @@ router.post('/login',login)
 router.post('/logout',logout)
 router.put('/profile-section',protectRoute,updateProfile)
 router.get('/check',protectRoute,chechAuth)
+// router.post("/google-login", googleAuth) // controller handles idToken from client
 
 export default router;

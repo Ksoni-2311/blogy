@@ -1,4 +1,6 @@
 // import { useState } from 'react'
+
+
 import {Routes ,Route, Navigate} from "react-router-dom"
 // import './App.css'
 import LoginPage from './pages/LoginPage.jsx'
@@ -18,6 +20,10 @@ import EditBlog from "./pages/EditBlog.jsx"
 import AllBlogDetails from "./pages/AllBlogDetails.jsx"
 import ViewBlog from "./pages/ViewBlog.jsx"
 import CommonPage from "./pages/CommonPage.jsx"
+
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
+
 
 function App() {
   const {authUser,checkAuth,isCheckingAuth}=authUserStore()

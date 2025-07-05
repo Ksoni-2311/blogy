@@ -4,6 +4,8 @@ import { Calendar, Eye, PlusCircle, Trash2, Edit } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { blogsStore } from '../store/blogStore'
 import { authUserStore } from '../store/authStore'
+import MDEditor from '@uiw/react-md-editor'
+import { formatDate } from '../lib/utils'
 
 
 function HomePage() {
@@ -43,13 +45,13 @@ function HomePage() {
             },
             {
               label: 'Total Views',
-              value: myBlogs.reduce((total, blog) => total + (blog.views || 0), 0),
+              value: myBlogs.reduce((total, blog) => total + (blog?.views || 0), 0),
               color: 'text-green-400',
               delay: 0.2,
             },
             {
               label: 'Published',
-              value: myBlogs.filter((blog) => blog.published).length,
+              value: myBlogs.filter((blog) => blog?.published).length,
               color: 'text-purple-400',
               delay: 0.3,
             },
@@ -104,7 +106,7 @@ function HomePage() {
             <div className="divide-y divide-gray-700">
               {myBlogs.map((blog, index) => (
                 <motion.div
-                  key={blog._id}
+                  key={blog?._id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
@@ -112,14 +114,14 @@ function HomePage() {
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between">
                     <div className="flex-1 mb-4 md:mb-0">
-                      <h3 className="text-lg font-semibold text-yellow-300 mb-2">{blog.title}</h3>
-                      <p className="text-gray-300 mb-3 line-clamp-2">{blog.content?.substring(0, 150)}...</p>
+                      <h3 className="text-lg font-semibold text-yellow-300 mb-2">{blog?.title}</h3>
+                      <p className="text-gray-300 mb-3 line-clamp-2">{blog?.content?.substring(0, 150)}...</p>
                       <div className="flex items-center space-x-4 text-sm text-gray-400">
                         <div className="flex items-center space-x-1">
                           <Calendar size={16} />
-                          {/* <span>{formatDate(blog.createdAt)}</span> */}
+                          <span>{formatDate(blog.createdAt)}</span>
                         </div>
-                        {blog.views && (
+                        {blog?.views && (
                           <div className="flex items-center space-x-1">
                             <Eye size={16} />
                             <span>{blog.views} views</span>
@@ -127,32 +129,32 @@ function HomePage() {
                         )}
                         <span
                           className={`px-2 py-1 rounded-full text-xs ${
-                            blog.published
+                            blog?.published
                               ? 'bg-green-200 text-green-800'
                               : 'bg-yellow-200 text-yellow-800'
                           }`}
                         >
-                          {blog.published ? 'Published' : 'Draft'}
+                          {blog?.published ? 'Published' : 'Draft'}
                         </span>
                       </div>
                     </div>
 
                     {/* Action buttons */}
                     <div className="flex items-center space-x-3">
-                      <Link to={`/viewBlog/${blog._id}`} className="text-blue-400 hover:text-blue-300 font-medium">
+                      <Link to={`/viewBlog/${blog?._id}`} className="text-blue-400 hover:text-blue-300 font-medium">
                         View
                       </Link>
                       <Link
-                        to={`/editBlog/${blog._id}`}
+                        to={`/editBlog/${blog?._id}`}
                         className="inline-flex items-center space-x-1 text-white hover:text-yellow-300"
                       >
                         <Edit size={16} />
                         <span>Edit</span>
                       </Link>
-                      <button className="inline-flex items-center space-x-1 text-red-400 hover:text-red-300">
+                      {/* <button className="inline-flex items-center space-x-1 text-red-400 hover:text-red-300">
                         <Trash2 size={16} />
                         <span>Delete</span>
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 </motion.div>
