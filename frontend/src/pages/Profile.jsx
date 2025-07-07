@@ -10,7 +10,7 @@ const Profile = () => {
     bio: "",
   })
 
-  const { authUser } = authUserStore()
+  const { authUser,isUpdatingProfile,updateUserInfo } = authUserStore()
 
   useEffect(() => {
     if (authUser) {
@@ -61,13 +61,6 @@ const Profile = () => {
                 className="size-32 rounded-full object-cover border-4 border-gray-900"
               />
             </div>
-            <label
-              htmlFor="avatar-upload"
-              className="absolute bottom-0 right-0 p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-80 cursor-pointer transition"
-            >
-              <Camera className="w-5 h-5 text-white" />
-              <input type="file" id="avatar-upload" className="hidden" />
-            </label>
           </div>
         </motion.div>
 

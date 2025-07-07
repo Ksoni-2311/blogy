@@ -93,7 +93,8 @@ function AllBlogDetails() {
                       )}
                       <MDEditor.Markdown
                         source={preview}
-                        className="text-sm text-white prose prose-invert max-w-none mt-5"
+                        className="text-sm text-white bg-gray-700 max-w-none mt-5 line-clamp-5
+                        "
                       />
                     {/* <p className="text-sm text-white line-clamp-8 mt-5">{preview}</p> */}
                   </div>
