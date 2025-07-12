@@ -4,8 +4,6 @@ import { Eye, EyeOff, Mail, Lock } from "lucide-react"
 import { authUserStore } from '../store/authStore'
 import toast from 'react-hot-toast'
 import { motion } from 'framer-motion'
-import { auth, googleProvider } from '../lib/firebase.config'
-import { signInWithPopup } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
 
 

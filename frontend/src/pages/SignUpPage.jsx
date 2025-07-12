@@ -5,8 +5,7 @@ import toast from "react-hot-toast"
 import avatar from '../assets/avatar.jpg'
 import { authUserStore } from "../store/authStore"
 import { motion } from "framer-motion"
-import {auth,googleProvider} from '../lib/firebase.config.js'
-import {  signInWithPopup } from 'firebase/auth'
+
 
 function SignUpPage() {
    const navigate = useNavigate()
