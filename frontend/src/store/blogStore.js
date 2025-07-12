@@ -35,7 +35,7 @@ export const blogsStore=create((set,get)=>({
         const {myBlogs}=get()
         try {
             const blogger=await axiosInstance.get("/user/check")
-            const res=await axiosInstance.post(`/blog/${blogger._id}`,msgData)
+            const res=await axiosInstance.post(`/blog/create/${blogger._id}`,msgData)
             set({myBlogs:[...myBlogs,res.data.blogs]});
             console.log(myBlogs);
             
@@ -142,6 +142,8 @@ export const blogsStore=create((set,get)=>({
     socket.emit("like", id);
   } catch (error) {
     toast.error("Something went wrong please try again later");
+    console.log("Error=>",error);
+    
   }
 }
 ,

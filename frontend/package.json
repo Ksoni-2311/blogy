@@ -17,6 +17,7 @@
     "@uiw/react-md-editor": "^4.0.7",
     "antd": "^5.26.2",
     "axios": "^1.10.0",
+    "blogy": "file:..",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.0",
     "lucide-react": "^0.517.0",

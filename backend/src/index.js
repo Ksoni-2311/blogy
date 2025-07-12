@@ -1,35 +1,83 @@
-import express from 'express'
-import authRoutes from './routes/auth.routes.js'
-import blogRoutes from './routes/blog.routes.js'
-import {connectDB} from './lib/db.js'
-import dotenv from 'dotenv'
+import express from 'express';
+import dotenv from 'dotenv';
+import authRoutes from './routes/auth.routes.js';
+import blogRoutes from './routes/blog.routes.js';
+import cors from 'cors';
+
+import { connectDB } from './lib/db.js';
+import path from 'path';
+
 import cookieParser from 'cookie-parser';
-import cors from 'cors'
-import {io,app,server} from './lib/socket.js'
-dotenv.config()
+import { app, server } from './lib/socket.js';
 
-const PORT=process.env.PORT || 7778;
+// Load environment variables
+dotenv.config();
+console.log("✅ Environment variables loaded.");
 
-// app.use(express.json());
-app.use(express.json({ limit: "10mb" }));
-console.log("express.json middleware added with 10mb limit.");
+const PORT = process.env.PORT || 7000;
+const __dirname = path.resolve();
+console.log(`📁 Project root directory: ${__dirname}`);
 
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-console.log("express.urlencoded middleware added with 10mb limit.");
 app.use(cookieParser());
+console.log("🍪 cookie-parser middleware added.");
 
 app.use(cors({
-    origin:"http://localhost:5173",
-    credentials: true,
+  origin: "http://localhost:5173",
+  credentials: true,
 }));
+console.log("🌐 CORS middleware configured for http://localhost:5173.");
+
+// Middleware
+app.use(express.json({ limit: "10mb" }));
+console.log("🛠️ express.json middleware added with 10mb limit.");
+
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+console.log("🛠️ express.urlencoded middleware added with 10mb limit.");
 
 
-// author , reader ,
 
-app.use('/user',authRoutes)
-app.use("/blog",blogRoutes)
+// Routes
+try {
+  app.use('/user', authRoutes);
+  console.log("👤 Auth routes mounted at /user.");
+} catch (err) {
+  console.error("❌ Failed to mount auth routes at /user:", err);
+}
 
-server.listen(PORT,()=>{
-    console.log(`app is listening at port ${PORT}`);
-    connectDB()
-})
+try {
+  app.use('/blog', blogRoutes);
+  console.log("📝 Blog routes mounted at /blog.");
+} catch (err) {
+  console.error("❌ Failed to mount blog routes at /blog:", err);
+}
+
+
+// Static files for production
+if (process.env.NODE_ENV === "production") {
+  const staticPath = path.join(__dirname, "../frontend/dist");
+  console.log("🚀 Production mode detected.");
+  console.log(`📦 Serving static files from: ${staticPath}`);
+
+  try {
+    app.use(express.static(staticPath));
+    console.log("Static middleware added.");
+
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(staticPath, "index.html"));
+    });
+    console.log("Catch-all route for SPA added.");
+  } catch (err) {
+    console.error("Error setting up static middleware or catch-all route:", err);
+  }
+}
+
+// Start server
+server.listen(PORT,  () => {
+  console.log(`🚀 Server is running on port ${PORT}`);
+  try {
+    connectDB();
+    console.log("✅ Database connected successfully.");
+  } catch (err) {
+    console.error("❌ Database connection failed:", err);
+  }
+});

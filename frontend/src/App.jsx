@@ -6,7 +6,6 @@ import {Routes ,Route, Navigate} from "react-router-dom"
 import LoginPage from './pages/LoginPage.jsx'
 import SignUpPage from './pages/SignUpPage.jsx'
 import HomePage from './pages/HomePage.jsx'
-import Settings from './pages/Settings.jsx'
 import Profile from './pages/Profile.jsx'
 import Navbar from './pages/Navbar.jsx'
 import Landing from "./pages/Landing.jsx"
