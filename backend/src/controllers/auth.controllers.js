@@ -33,56 +33,41 @@ export const login = async(req, res) => {
     }
 }
 
-export const signup =async(req, res) => {
-    const {fullName, email, password, profilePic } = req.body
-    // console.log(req.body);
+const avatar = "https://pbs.twimg.com/profile_images/1505740159068766211/UARkfRxy_400x400.jpg";
+
+export const signup = async (req, res) => {
+    const { fullName, email, password, profilePic } = req.body;
+
     try {
-        /* 1} take all field .chk !fullname || !email|| !! pass =>all are required
-           2} for pass create salt then hash it store them at database 
-           3}chk if email already their if true => user already exist please signin
-           4}if all ok res.status(200) else give error
-         */
-
         if (!fullName || !email || !password) {
-            res.status(400).json("All fields are require")
-            return
+            return res.status(400).json({ error: "All fields are required" });
         }
-        if (!fullName) {
-            res.status(400).json("Fullname is required")
-            return
-        }
-        if (!email) {
-            res.status(400).json("Email is required")
-            return
-        }
-        if (!password) {
-            res.status(400).json("Password is required")
-            return
-        }        
-        const isEmailExist =await User.findOne({email})
+
+        const isEmailExist = await User.findOne({ email });
         if (isEmailExist) {
-            res.status(500).json("User already exist. Please login")
-            return
+            return res.status(409).json({ error: "User already exists. Please login" });
         }
-        // log("yaha ")
 
-        const salt =await bcrypt.genSalt(10);
-        const hashPassword =await bcrypt.hash(password, salt);
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(password, salt);
 
-        const pic=await cloudinary.uploader.upload(profilePic)
+        let uploadedPic = avatar;
+        if (profilePic) {
+            const uploadResponse = await cloudinary.uploader.upload(profilePic);
+            uploadedPic = uploadResponse.secure_url || avatar;
+        }
 
-        const newUser =new User({
+        const newUser = new User({
             fullName,
             email,
-            password:hashPassword,
-            profilePic:pic.secure_url
-        })
+            password: hashPassword,
+            profilePic: uploadedPic
+        });
 
-        if(!newUser){
-            res.status(409).json("Server side error. Try again after a while")
-        }else{
-            await newUser.save()
-            return res.status(201).json({
+        await newUser.save();
+        generateToken(newUser._id, res);
+
+        return res.status(201).json({
             message: "User registered successfully",
             user: {
                 _id: newUser._id,
@@ -91,11 +76,12 @@ export const signup =async(req, res) => {
                 profilePic: newUser.profilePic
             }
         });
-        }
+
     } catch (error) {
-        res.status(400).json("Signup controller error",error.message)
+        return res.status(500).json({ error: "Signup controller error", message: error.message });
     }
-}
+};
+
 
 export const logout=async (req,res) => {
     try {

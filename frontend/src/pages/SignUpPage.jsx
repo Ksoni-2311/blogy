@@ -20,30 +20,30 @@ function SignUpPage() {
     password: "",
     profilePic: ""
   })
-  const loginWithGoogle=async () => {
-    try {
-      const result=await signInWithPopup(auth,googleProvider)
-      const user=result.user
-      const name = user.displayName
-      const email = user.email
-      const photo = user.photoURL
-      const id=await user.getIdToken()
+  // const loginWithGoogle=async () => {
+  //   try {
+  //     const result=await signInWithPopup(auth,googleProvider)
+  //     const user=result.user
+  //     const name = user.displayName
+  //     const email = user.email
+  //     const photo = user.photoURL
+  //     const id=await user.getIdToken()
 
-      const newFormData={
-        fullName:name,
-        profilePic:photo,
-        email:email,
-        password:email+`${id}`
-      }
+  //     const newFormData={
+  //       fullName:name,
+  //       profilePic:photo,
+  //       email:email,
+  //       password:email+`${id}`
+  //     }
       
-      await signup(newFormData);
-      toast.success("Account Created SuccessFully Please Login To Continue")
-      navigate('/login')
-    } catch (error) {
-      console.log(error);
+  //     await signup(newFormData);
+  //     toast.success("Account Created SuccessFully Please Login To Continue")
+  //     navigate('/login')
+  //   } catch (error) {
+  //     console.log(error);
       
-    }
-  }
+  //   }
+  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -52,6 +52,7 @@ function SignUpPage() {
     try {
       await signup(formData)
       toast.success("Account created successfully!")
+      navigate("/dashboard")
     } catch (err) {
       toast.error("Signup failed. Please try again.")
     } finally {

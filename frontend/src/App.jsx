@@ -51,7 +51,7 @@ function App() {
       <Route path='/profile' element={authUser?<Profile />:<Navigate to="/login" />}   />
       <Route path='/dashboard' element={authUser ? <HomePage /> :<Navigate to="/login"/> }   />
       <Route path="/editBlog/:id" element={<EditBlog />} /> {/* ✅ EDIT ROUTE */}
-      <Route path="/viewBlog/:id" element={<ViewBlog />} /> {/* ✅ View ROUTE */}
+      <Route path="/viewBlog/:id" element={authUser ? <ViewBlog />:<CommonPage />} /> {/* ✅ View ROUTE */}
       <Route path="*" element={<CommonPage />} /> {/* ✅ View ROUTE */}
 
 

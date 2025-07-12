@@ -28,10 +28,10 @@ app.use(cors({
 console.log("🌐 CORS middleware configured for http://localhost:5173.");
 
 // Middleware
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "50mb" }));
 console.log("🛠️ express.json middleware added with 10mb limit.");
 
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 console.log("🛠️ express.urlencoded middleware added with 10mb limit.");
 
 
