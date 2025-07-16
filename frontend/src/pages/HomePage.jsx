@@ -105,12 +105,12 @@ function HomePage() {
                     <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400">
                       <div className="flex items-center gap-1">
                         <Calendar size={16} />
-                        <span>{formatDate(blog.createdAt)}</span>
+                        <span>{formatDate(blog?.createdAt)}</span>
                       </div>
                       {blog?.views && (
                         <div className="flex items-center gap-1">
                           <Eye size={16} />
-                          <span>{blog.views} views</span>
+                          <span>{blog?.views} views</span>
                         </div>
                       )}
                       <span
