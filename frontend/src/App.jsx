@@ -52,14 +52,7 @@ function App() {
       <Route path='/dashboard' element={authUser ? <HomePage /> :<Navigate to="/login"/> }   />
       <Route path="/editBlog/:id" element={<EditBlog />} /> {/* ✅ EDIT ROUTE */}
       <Route path="/viewBlog/:id" element={authUser ? <ViewBlog />:<CommonPage />} /> {/* ✅ View ROUTE */}
-      <Route path="*" element={<CommonPage />} /> {/* ✅ View ROUTE */}
-
-
-      {/* 
-      
-      <Route path='/settings' element={<Settings />}   />
-      
-      <Route path='/' element={!authUser && <Landing />}   /> */}
+      <Route path="*" element={<CommonPage />} />
     </Routes>
     <Toaster />
     </div>
